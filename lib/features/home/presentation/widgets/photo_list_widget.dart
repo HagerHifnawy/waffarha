@@ -26,14 +26,14 @@ final List<HomeModel> currentItems;
               horizontal: 15.w, vertical: 15.h),
           child: Row(
             children: [
-              // SizedBox(
-              //   height: 60.h,
-              //   width: 60.w,
-              //   child: Image.network(
-              //     currentItems[index].thumbnailUrl ?? "",
-              //     fit: BoxFit.cover,
-              //   ),
-              // ),
+              SizedBox(
+                height: 60.h,
+                width: 60.w,
+                child: Image.network(
+                  currentItems[index].thumbnailUrl ?? "",
+                  fit: BoxFit.cover,
+                ),
+              ),
               10.horizontalSpace,
               Expanded(
                 child: Column(

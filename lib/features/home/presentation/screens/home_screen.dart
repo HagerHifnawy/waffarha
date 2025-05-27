@@ -14,14 +14,24 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Waffarha', canBack: false,actions: [
+      appBar: CustomAppBar(title: 'Waffarha', canBack: false, actions: [
         IconButton(
-          icon: Icon(Icons.filter_list,color: AppColors.secondaryColor,size: 40.r,),
-          onPressed: () => context.read<HomeCubit>().showFilterBottomSheet(context),
+          icon: Icon(
+            Icons.filter_list,
+            color: AppColors.secondaryColor,
+            size: 40.r,
+          ),
+          onPressed: () =>
+              context.read<HomeCubit>().showFilterBottomSheet(context),
         ),
         IconButton(
-          icon:  Icon(Icons.sort,color: AppColors.secondaryColor,size: 40.r,),
-          onPressed: () => context.read<HomeCubit>().showSortBottomSheet(context),
+          icon: Icon(
+            Icons.sort,
+            color: AppColors.secondaryColor,
+            size: 40.r,
+          ),
+          onPressed: () =>
+              context.read<HomeCubit>().showSortBottomSheet(context),
         ),
       ]),
       body: SingleChildScrollView(
@@ -38,21 +48,29 @@ class HomeScreen extends StatelessWidget {
               20.verticalSpace,
               BlocBuilder<HomeCubit, HomeState>(
                 builder: (context, state) {
-                  final homeList = context.read<HomeCubit>().filteredModel ?? [];
+                  final homeList =
+                      context.read<HomeCubit>().filteredModel ?? [];
                   final currentPage = context.read<HomeCubit>().currentPage;
                   final itemsPerPage = context.read<HomeCubit>().itemsPerPage;
+                  // calculate total Pages From All list length / count for items in page
                   final totalPages = (homeList.length / itemsPerPage).ceil();
+                  // calculate start index (that = current page * count for items in page) to sublist all List from it
                   final startIndex = currentPage * itemsPerPage;
+                  // if start Index + count for items in page > All list length
+                  // calculate end index (that = start Index + count for items in page) to sublist all List until it
+                  // else end index = All list length
                   final endIndex = (startIndex + itemsPerPage > homeList.length)
                       ? homeList.length
                       : startIndex + itemsPerPage;
                   final currentItems = homeList.sublist(startIndex, endIndex);
                   return Column(
                     children: [
+                      // separated List to view json data in screen ui
                       PhotoListWidget(
                         currentItems: currentItems,
                       ),
                       20.verticalSpace,
+                      // Buttons to navigate between pages next page OR Previous Page
                       PaginationButtonsWidget(
                         currentPage: currentPage,
                         totalPages: totalPages,

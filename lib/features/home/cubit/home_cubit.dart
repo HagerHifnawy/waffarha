@@ -13,19 +13,20 @@ class HomeCubit extends Cubit<HomeState> {
   final HomeRepository _homeRepository;
 
   /// Get Home
-  ///
   List<HomeModel>? homeModel;
   Future getHome() async {
-    showLoading();
+    showLoading(); //Start Loading Widget
     emit(GetHomeLoadingState());
+    // Using HomeRepository to get Home Data From Api
     final result = await _homeRepository.getHome();
     result.when(success: (success) {
+      // Set Data in List of Home model
       homeModel = success;
       filteredModel = List.from(homeModel!);
-      hideLoading();
+      hideLoading(); //End Loading Widget
       emit(GetHomeSuccessState());
     }, failure: (error) {
-      hideLoading();
+      hideLoading(); //End Loading Widget
       emit(GetHomeFailedState());
     });
   }
@@ -33,11 +34,13 @@ class HomeCubit extends Cubit<HomeState> {
   /// Pagination
   int currentPage = 0;
   int itemsPerPage = 10;
-
   void changePage(bool isNext) {
+    // If Current Page is bigger than 0 can go Back
     if (currentPage > 0 && isNext == false) {
       currentPage--;
-    } else if (isNext == true) {
+    }
+    // if the button clicked is next go next Page
+    else if (isNext == true) {
       currentPage++;
     }
     emit(ChangePageState());
@@ -47,35 +50,45 @@ class HomeCubit extends Cubit<HomeState> {
   String? sortBy;
   bool sortAsc = true;
   void sortByAlbumId() {
+    // Set value for variable SortBy to albumId
     sortBy = 'albumId';
     _sortData();
     emit(SortByAlbumIdState());
   }
 
   void sortByTitle() {
+    // Set value for variable SortBy to title
     sortBy = 'title';
     _sortData();
     emit(SortByPhotoTitleState());
   }
 
   void _sortData() {
+    // IF filteredModel Data is null don't do any thing
     if (filteredModel == null) return;
+    // Before Start Sorting Set filteredModel = homeModel Data
     filteredModel = List.from(homeModel!);
+    // Use fun Sort to compare and sort data in filteredModel list
     filteredModel!.sort((a, b) {
       int result;
+      // If sortBy == albumId make filteredModel List Sorted with album id
       if (sortBy == 'albumId') {
         result = (a.albumId ?? 0).compareTo(b.albumId ?? 0);
-      } else if (sortBy == 'title') {
+      }
+      // If sortBy == title make filteredModel List Sorted with photoTitle
+      else if (sortBy == 'title') {
         result = (a.title ?? '')
             .toLowerCase()
             .compareTo((b.title ?? '').toLowerCase());
       } else {
         return 0;
       }
+      // If Sort Ascending is true return result else return -result (reversed list)
       return sortAsc ? result : -result;
     });
   }
 
+  /// Bottom Sheet To Select Sort Type(Album id OR Photo Title)
   void showSortBottomSheet(BuildContext context) {
     showModalBottomSheet(
         context: context,
@@ -131,6 +144,7 @@ class HomeCubit extends Cubit<HomeState> {
                     ),
                     value: sortAsc,
                     onChanged: (val) {
+                      // set Value for Sorting Ascending
                       setState(() {
                         sortAsc = val;
                       });
@@ -145,18 +159,19 @@ class HomeCubit extends Cubit<HomeState> {
 
   /// Filter Data With Album Id
   List<HomeModel>? filteredModel;
-  int? selectedAlbumId;
   void filterByAlbumId(int? albumId) {
-    selectedAlbumId = albumId;
+    // If album id == null its mean show all ids
     if (albumId == null) {
       filteredModel = List.from(homeModel!);
     } else {
+      // Make filteredModel List == all items in homeModel List Where album id == any item.albumId
       filteredModel =
           homeModel!.where((item) => item.albumId == albumId).toList();
     }
     emit(FilterByAlbumIdState());
   }
 
+  /// Bottom Sheet to Show All Album Id in homeModel List and select Album id to filter with it
   void showFilterBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
