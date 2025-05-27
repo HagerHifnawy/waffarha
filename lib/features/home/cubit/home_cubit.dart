@@ -68,6 +68,7 @@ class HomeCubit extends Cubit<HomeState> {
     if (filteredModel == null) return;
     // Before Start Sorting Set filteredModel = homeModel Data
     filteredModel = List.from(homeModel!);
+    currentPage=0;
     // Use fun Sort to compare and sort data in filteredModel list
     filteredModel!.sort((a, b) {
       int result;
@@ -160,6 +161,7 @@ class HomeCubit extends Cubit<HomeState> {
   /// Filter Data With Album Id
   List<HomeModel>? filteredModel;
   void filterByAlbumId(int? albumId) {
+    currentPage=0;
     // If album id == null its mean show all ids
     if (albumId == null) {
       filteredModel = List.from(homeModel!);
