@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:isolate';
 
 import 'package:waffarha/features/home/data/models/home_model.dart';
@@ -27,8 +28,15 @@ class HomeRepository {
         homeModelIsolateEntry,  // Entry function for the isolate
         HomeParseMessage(receivePort.sendPort, response.data), // Message contains SendPort and raw JSON
       );
+      // Use a Completer to convert ReceivePort into a Future for easier async handling
+      final completer = Completer<List<HomeModel>>();
+      receivePort.listen((modelData) {
+        completer.complete(modelData);
+        receivePort.close();
+      });
       // Wait for the parsed data from the isolate
-      final List<HomeModel> model = await receivePort.first;
+      final List<HomeModel> model = await completer.future;
+      // final List<HomeModel> model = await receivePort.first;
       return ApiResult.success(model);
     } else {
       debugPrintWidget(response.data['errors']);
@@ -37,3 +45,4 @@ class HomeRepository {
     }
   }
 }
+
